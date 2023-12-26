@@ -48,3 +48,7 @@ implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0"
 * hold, update the state
 * **uri to path conversion logic**
 
+### 이슈
+* https://developer.android.com/reference/androidx/activity/result/contract/ActivityResultContracts
+* https://stackoverflow.com/questions/68800942/not-getting-result-from-rememberlauncherforactivityresult-in-jetpack-compose
+* image picking : https://fvilarino.medium.com/using-activity-result-contracts-in-jetpack-compose-14b179fb87de

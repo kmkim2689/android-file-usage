@@ -72,4 +72,6 @@ dependencies {
 
 //for view-model in compose
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+
+    implementation("io.coil-kt:coil-compose:2.5.0")
 }
