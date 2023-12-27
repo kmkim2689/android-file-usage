@@ -52,3 +52,18 @@ implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0"
 * https://developer.android.com/reference/androidx/activity/result/contract/ActivityResultContracts
 * https://stackoverflow.com/questions/68800942/not-getting-result-from-rememberlauncherforactivityresult-in-jetpack-compose
 * image picking : https://fvilarino.medium.com/using-activity-result-contracts-in-jetpack-compose-14b179fb87de
+
+
+## Uploading Files with Retrofit
+* add dependencies
+  * retrofit, okhttp
+
+* add permission(internet)
+
+* assets directory(new directory)
+  * src > main > assets
+  * put an image...(or whatever file doesn't matter)
+  * boot.jpg
+
+* retrofit interface
+

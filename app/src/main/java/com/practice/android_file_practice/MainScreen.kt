@@ -1,6 +1,7 @@
 package com.practice.android_file_practice
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,6 +20,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -34,6 +40,9 @@ fun MainScreen(
     viewModel: MainViewModel = viewModel(),
 ) {
     val state = viewModel.state
+    var files by remember {
+        mutableStateOf<MutableList<ByteArray>>(mutableListOf())
+    }
 
     // for permission state
     val permissionState = rememberPermissionState(permission = READ_EXTERNAL_STORAGE)
@@ -65,7 +74,13 @@ fun MainScreen(
         onResult = { uris ->
             // get the list of uris
             // handle the callback from filePickerLauncher which returns list of uris
-            viewModel.onFilePathsListChange(uris, context)
+//            viewModel.onFilePathsListChange(uris, context)
+            uris.forEach {uri ->
+                val item = context.contentResolver.openInputStream(uri)?.use {
+                    val bytes = it.readBytes()
+                    files.add(bytes)
+                }
+            }
         }
     )
 
