@@ -1,6 +1,7 @@
 package com.practice.android_file_practice.download_manager
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -24,6 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.documentfile.provider.DocumentFile
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.practice.android_file_practice.download_manager.data.PdfFile
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +47,9 @@ fun PdfPickerScreen(
         mutableStateOf(null)
     }
 
+    val storageReference = FirebaseStorage.getInstance().reference.child("pdfs")
+    val databaseReference = FirebaseDatabase.getInstance().reference.child("pdfs")
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
@@ -49,6 +58,28 @@ fun PdfPickerScreen(
             fileName = uri?.let { DocumentFile.fromSingleUri(context, it)?.name }.toString()
         }
     )
+
+    fun uploadPdfFileToFirebase() {
+        val mStorageRef = storageReference.child("${System.currentTimeMillis()}/$fileName")
+        pdfFileUri?.let { uri ->
+            mStorageRef.putFile(uri).addOnSuccessListener {
+                mStorageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                    val pdfFile = PdfFile(fileName.toString(), downloadUri.toString())
+                    databaseReference.push().key?.let { pushKey ->
+                        databaseReference.child(pushKey).setValue(pdfFile).addOnSuccessListener {
+                            Toast.makeText(context, "uploaded successfully", Toast.LENGTH_SHORT).show()
+                        }.addOnFailureListener { error ->
+                            Toast.makeText(context, error.message.toString(), Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }.addOnProgressListener {
+
+            }.addOnFailureListener {
+
+            }
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -75,10 +106,22 @@ fun PdfPickerScreen(
                 fileName?.let {
                     Text(text = it)
                 } ?: Text(text = "choose pdf file to upload")
+
+                Button(onClick = {
+                    pdfFileUri?.let {
+                        uploadPdfFileToFirebase()
+                    } ?: Toast.makeText(context, "select pdf first", Toast.LENGTH_SHORT).show()
+                }) {
+                    Text(text = "upload pdf")
+                }
             }
         }
     }
+
+
 }
+
+
 
 @Preview
 @Composable

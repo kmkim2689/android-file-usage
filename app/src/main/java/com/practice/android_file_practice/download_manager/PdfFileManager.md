@@ -23,3 +23,48 @@
   -> real time database와 storage에 대한 설정 완료
 
 2. Pdf Picker Floating Button 구현
+* 클릭 시, 파일 관리자가 실행되고 pdf 파일을 선택할 수 있도록 한다
+* pdf 파일을 선택하면 파일의 Uri를 담을 수 있는 변수를 마련하고, 파일의 이름을 추출하여 다른 변수에 할당한다.
+```
+val context = LocalContext.current
+
+var pdfFileUri: Uri? by remember {
+    mutableStateOf(null)
+}
+
+var fileName: String? by remember {
+    mutableStateOf(null)
+}
+
+val launcher = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.GetContent(),
+    onResult = { uri ->
+        pdfFileUri = uri
+        // getting file name from uri
+        fileName = uri?.let { DocumentFile.fromSingleUri(context, it)?.name }.toString()
+    }
+)
+```
+
+```
+Scaffold(
+    modifier = Modifier.fillMaxSize(),
+    floatingActionButton = {
+        FloatingActionButton(onClick = {
+            // launch file manager to choose file from it
+            launcher.launch("application/pdf")
+            // to get images...
+            // launcher.launch("images/*")
+        }) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = "add pdf")
+        }
+    }
+) { paddingValues ->
+    // ...
+}
+```
+
+3. Pdf 파일을 Firebase Storage에 업로드
+* Firebase 콘솔 > Storage 기능 상에서, 폴더를 하나 만든다.
+  * 폴더명 : pdfs
+  * 해당 폴더 하위에는, 타임스탬프를 제목으로 하는 폴더들이 존재하고 각 폴더 안에는 해당 시간에 업로드한 pdf 파일이 들어가도록 한다.
