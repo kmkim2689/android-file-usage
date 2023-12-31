@@ -1,6 +1,7 @@
 package com.practice.android_file_practice.download_manager
 
 import android.net.Uri
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,11 +14,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,6 +50,14 @@ fun PdfPickerScreen(
         mutableStateOf(null)
     }
 
+    var showProgressBar by remember {
+        mutableStateOf(false)
+    }
+
+    var uploadProgress by remember {
+        mutableFloatStateOf(0f)
+    }
+
     val storageReference = FirebaseStorage.getInstance().reference.child("pdfs")
     val databaseReference = FirebaseDatabase.getInstance().reference.child("pdfs")
 
@@ -67,16 +78,23 @@ fun PdfPickerScreen(
                     val pdfFile = PdfFile(fileName.toString(), downloadUri.toString())
                     databaseReference.push().key?.let { pushKey ->
                         databaseReference.child(pushKey).setValue(pdfFile).addOnSuccessListener {
+                            // 업로드가 성공되었으므로 다시 다른 파일을 선택할 수 있도록 하려면 null로 설정해야 함.
+                            pdfFileUri = null
+                            fileName = null
                             Toast.makeText(context, "uploaded successfully", Toast.LENGTH_SHORT).show()
                         }.addOnFailureListener { error ->
                             Toast.makeText(context, error.message.toString(), Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
-            }.addOnProgressListener {
+            }.addOnProgressListener { uploadTask ->
+                showProgressBar = true
 
-            }.addOnFailureListener {
-
+                // bytesTransferred : gives the the # of transferred (= uploaded) bytes
+                uploadProgress = (uploadTask.bytesTransferred * 100 / uploadTask.totalByteCount).toFloat()
+            }.addOnFailureListener { error ->
+                showProgressBar = false
+                Toast.makeText(context, error.message.toString(), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -103,6 +121,13 @@ fun PdfPickerScreen(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
+                if (showProgressBar && uploadProgress < 100) {
+                    LinearProgressIndicator(
+                        progress = uploadProgress
+                    )
+                }
+
                 fileName?.let {
                     Text(text = it)
                 } ?: Text(text = "choose pdf file to upload")
