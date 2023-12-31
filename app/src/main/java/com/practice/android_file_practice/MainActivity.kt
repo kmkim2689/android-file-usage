@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.practice.android_file_practice.download_manager.PdfPickerScreen
 import com.practice.android_file_practice.ui.theme.AndroidfilepracticeTheme
 import com.practice.android_file_practice.upload_retrofit.FileViewModel
 import java.io.File
@@ -21,7 +22,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AndroidfilepracticeTheme {
-                val viewModel = viewModel<FileViewModel>()
+                /*val viewModel = viewModel<FileViewModel>()
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -40,7 +41,9 @@ class MainActivity : ComponentActivity() {
                         Text(text = "upload image")
 
                     }
-                }
+
+                }*/
+                PdfPickerScreen()
             }
         }
     }
