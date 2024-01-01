@@ -82,4 +82,12 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.3")
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.3")
+
+    // navigation
+    val navVersion = "2.5.3"
+    // Kotlin
+    implementation ("androidx.navigation:navigation-fragment-ktx:$navVersion")
+    implementation ("androidx.navigation:navigation-ui-ktx:$navVersion")
+    // Jetpack Compose Integration
+    implementation ("androidx.navigation:navigation-compose:$navVersion")
 }

@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.documentfile.provider.DocumentFile
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -37,7 +38,10 @@ import com.practice.android_file_practice.download_manager.data.PdfFile
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PdfPickerScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onListBrowseClick: () -> Unit,
+    storageReference: StorageReference,
+    databaseReference: DatabaseReference
 ) {
 
     val context = LocalContext.current
@@ -57,9 +61,6 @@ fun PdfPickerScreen(
     var uploadProgress by remember {
         mutableFloatStateOf(0f)
     }
-
-    val storageReference = FirebaseStorage.getInstance().reference.child("pdfs")
-    val databaseReference = FirebaseDatabase.getInstance().reference.child("pdfs")
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -139,6 +140,9 @@ fun PdfPickerScreen(
                 }) {
                     Text(text = "upload pdf")
                 }
+                Button(onClick = onListBrowseClick) {
+                    Text(text = "show all")
+                }
             }
         }
     }
@@ -147,9 +151,13 @@ fun PdfPickerScreen(
 }
 
 
+/*
 
 @Preview
 @Composable
 fun PdfPickerScreenPreview() {
-    PdfPickerScreen()
-}
+    PdfPickerScreen(
+        onListBrowseClick = {},
+
+    )
+}*/
