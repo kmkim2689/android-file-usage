@@ -17,6 +17,7 @@ fun PdfNavGraph(
     navController: NavHostController,
     databaseReference: DatabaseReference,
     storageReference: StorageReference,
+    downloadPdf: (String, String) -> Unit
 ) {
     NavHost(navController = navController, startDestination = "picker") {
         composable(route = "picker") {
@@ -50,7 +51,8 @@ fun PdfNavGraph(
                 PdfContentScreen(
                     modifier = Modifier.fillMaxSize(),
                     fileName = it.getString("fileName", ""),
-                    downloadUrl = it.getString("downloadUrl", "")
+                    downloadUrl = it.getString("downloadUrl", ""),
+                    downloadPdf = downloadPdf
                 )
             }
         }

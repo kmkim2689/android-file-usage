@@ -101,7 +101,6 @@ fun PdfsListScreen(
                 key = { pdfFile ->
                     pdfFile.fileName
                 },
-
             ) { pdfFile ->
                 PdfItem(
                     modifier = Modifier
